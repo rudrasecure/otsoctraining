@@ -86,3 +86,90 @@ image::images/coil_flip.png[]
 == Attack 2 - Modbus command injection
 
 Flip the bit in Coil 40. Use the python script provided to do this. In the attacker machine go to `~/Documents/working_files`. Activate the python env using `source venv/bin/activate` and run the python file
+
+[,python]
+----
+include::working_files/shutdown_plant.py[]
+----
+
+This should have the same result as clicking on the HMI
+
+== Attack 3 - Malicious PLC program upload
+
+Turn the plant back on and make sure the simulation is running. Now we are going to upload a malicious PLC program to cause the plant to explode. Use the `attack.st` file to upload your malicious program to the PLC. Use the PLC's web interface on `http://192.168.95.2:8080` for this.
+
+If you want to understand this PLC program in detail, you should install the OpenPLC editor. https://autonomylogic.com/download/ 
+
+Grab the PLC programs from the original GRFICSv2 repo and play with them.
+
+When you're done blowing up the plant, you should put the `simpl.st` file back on the PLC.
+
+== Attack 4 - Overwrite Pressure Setpoint with modbus injection
+
+You can achieve a similar result to the malicious PLC program upload (unsafe state) by over writing a safe pressure setpoint register. If you download the GRFICSv2 workstation VM, open the OpenPLC editor, and view the initial setpoints of the PLC program, it becomes clear that there are two registers (exposed on 1025 and 1026) that contain values that can be overwritten to put the plant in an unsafe state.
+
+You may try this from the below code
+
+[,python]
+----
+include::working_files/blow_up_plant.py[]
+----
+
+== Defense
+
+=== Detection logic
+
+Below is a snippet of the detection logic in Wazuh for PLC file integrity, a custom PLC probe for the pressure setpoint, and for network access to the PLC from unauthorized machines.
+
+[,xml]
+----
+<!-- Local rules -->
+
+<!-- Modify it at your will (and your own risk). -->
+<!-- Copyleft RUDRA Cybersecurity -->
+<!-- Example -->
+<group name="local,">
+
+  <!--
+  Dec 10 01:02:02 host sshd[1234]: Failed none for root from 1.1.1.1 port 1066 ssh2
+  -->
+  <rule id="100001" level="5">
+    <if_sid>5716</if_sid>
+    <srcip>1.1.1.1</srcip>
+    <description>sshd: authentication failed from IP 1.1.1.1.</description>
+    <group>authentication_failed,pci_dss_10.2.4,pci_dss_10.2.5,</group>
+  </rule>
+
+  <rule id="100002" level="0">
+    <location>/var/log/output.log</location>
+    <field name="value">\.+</field>
+    <description>PLC values grouped $(value)</description>
+    <group>plc,</group>
+  </rule>
+  <rule id="100003" level="13">
+    <if_sid>100002</if_sid>
+    <field name="value" type="pcre2">^(55[3-9]\d{2}|5[6-9]\d{3}|[6-9]\d{4}|\d{6,})</field>
+    <description>Urgent:: PLC pressure setpoint $(value)</description>
+    <group>plc,</group>
+  </rule>
+  <rule id="100005" level="10">
+    <if_group>syscheck</if_group>
+    <field name="file">/home/user/OpenPLC_v2/st_files</field>
+    <description>PLC programme integrity alert</description>
+    <group>plc,syscheck,</group>
+  </rule>  
+  <rule id="100010" level="13">
+    <if_sid>86601</if_sid>
+    <field name="src_ip">192.168.95.2</field>
+    <field name="dest_ip" negate="yes">192.168.90.5|192.168.90.200</field>
+    <description>Urgent:: Suricata PLC communicating with unknown IP $(dest_ip)</description>
+    <group>plc,suricata,</group>
+  </rule>
+  <rule id="100023" level="0">
+    <if_sid>510</if_sid>
+    <field name="file">bin/diff$</field>
+    <description>False-positive match for rootcheck regex</description>
+    <group>syscheck,rootcheck,</group>
+  </rule>  
+</group>
+----
