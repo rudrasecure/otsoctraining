@@ -1,0 +1,8 @@
+= OpenPLC Compiled Programs
+
+Upload the `simpl.st` to run the PLC in normal mode. `attack.st`, as you guessed contains the malicious PLC program that causes the plant to explode.
+
+== Source and credits
+
+These files contain the compiled programs of the OpenPLC programs located in https://github.com/Fortiphyd/GRFICSv2/tree/master/workstation_vm 
+

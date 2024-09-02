@@ -1,0 +1,88 @@
+:siemip: 192.168.90.20
+:attackerip: 192.168.0.249
+= OT ISAC Training
+
+This repository contains the links, and code necessary for the OT SOC Detection Engineering Workshop.
+
+== Environment
+
+Chemical Plant Simulation : http://192.168.95.10
+PLC : http://192.168.95.2:8080
+HMI : http://192.168.5:8080/ScadaBR
+Firewall : http://192.168.90.100
+Workstation : 192.168.95.200
+
+=== Credentials
+
+PLC : user : password
+HMI : admin : admin
+Firewall : admin : pfsense
+Workstation : workstation : Fortphyd
+SIEM : blueteam : BlueIceFox@1
+
+
+
+== Exercise 1 - Login to Chemical Plant simulation
+
+=== Step 1
+Port forward through Jump server
+
+`ssh -D 8080 kali@{attackerip}`
+
+`pass : kali`
+
+=== Step 2
+
+Configure your browser for using a Dynamic Socks 5 Proxy. It's better to create a new profile, open that in a new window and use the proxy on the new profile. This will enable you to use your unproxied browser for doing research and browsing the internet, while using your proxied browser to manage the OT simulation ecosystem. 
+
+.Open the menu and select settings
+image::images/firefox_menu.png[]
+
+.Scroll all the way to the bottom and open Network Settings
+image::images/firefox_settings.png[]
+
+You should enter the following details into the fileds below
+
+```
+SOCKS5 HOST : 127.0.0.1
+PORT : 8080 (or whatever port you used after the -D flag in your ssh command)
+Dont bother with the DNS settings in 4 below.
+```
+
+.Enter the proxy details in the above fields
+image::images/firefox_proxy.png[]
+
+
+=== Step 3 - Open the simulation
+
+Open your browser (the one with the proxy setting) and head to
+
+Chemical Plant Sim : http://192.168.95.10
+
+HMI : http://192.168.5:8080/ScadaBR
+
+HMI Creds - `admin : admin`
+
+=== Step 4 - Switch off and on the plant
+
+Use the HMI to switch off and on the plant. Observe what happens to the simulation.
+
+== Exercise 2 - Log in to the attacker machine
+
+`ssh kali@{attackerip}`
+
+`pass : kali`
+
+== Attack 1 - ARP Spoofing and traffic sniffing
+
+*Do not do this in a shared lab* as it will spoil the activity for your fellow participants. Ordinarily, as an attacker, you can spoof the HMI using `arpspoof 192.168.90.5` from your attacker machine, and then run wireshark on the interface connected to that network. You should see the modbus commands going between the PLC and HMI. 
+
+Inspecting this traffic will help you to understand which coil to change to shutdown the plant. (It's coil 40)
+
+.Coil 40 Bit 1 shutds down plant
+
+image::images/coil_flip.png[]
+
+== Attack 2 - Modbus command injection
+
+Flip the bit in Coil 40. Use the python script provided to do this. In the attacker machine go to `~/Documents/working_files`. Activate the python env using `source venv/bin/activate` and run the python file

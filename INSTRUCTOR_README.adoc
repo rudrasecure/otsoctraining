@@ -1,0 +1,59 @@
+:siemip: 192.168.1.114
+:attackerip: 192.168.1.200
+= OT ISAC Training
+
+This repository contains the links, and code necessary for the OT SOC Detection Engineering Workshop.
+
+== Environment
+
+Chemical Plant Simulation : http://192.168.95.10
+PLC : http://192.168.95.2:8080
+HMI : http://192.168.5:8080/ScadaBR
+Firewall : http://192.168.90.100
+Workstation : 192.168.95.200
+
+=== Credentials
+
+PLC : user : password
+HMI : admin : admin
+Firewall : admin : pfsense
+Workstation : workstation : Fortphyd
+SIEM : blueteam : BlueIceFox@1
+Simulation : simulation : Fortiphyd
+
+
+== Demo all activities
+
+=== Shutdown the plant
+
+* Using the HMI
+* Using Injection - show the modbus coil responsible in the Wireshark screenshot
+** Use the python script to inject the value
+** watch the plant shutdown
+
+=== Blow up the plant
+
+* Upload malicious PLC program
+* Reset the simulation
+* Do not use the script to inject the pressure_sp just yet - let the participants think about this. 
+
+== Reset Chemical Plant Simulation
+
+After blowing up the plant, you will need to reset the sim
+
+=== Step 1
+
+Ensure that the normal PLC programm is running (not the attack program)
+
+
+=== Step 2
+
+Restart the systemd process for the chemical plant
+
+`sudo systemctl restart grfics.service`
+
+== Restart the PLC value check service on the SIEM
+
+`sudo systemctl restart plc-pressure-probe.service`
+
+Log file is picked up from /var/log/output.log - Look here in case anything goes wrong with this detection
