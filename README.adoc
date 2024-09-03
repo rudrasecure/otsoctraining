@@ -6,11 +6,11 @@ This repository contains the links, and code necessary for the OT SOC Detection 
 
 == Environment
 
-Chemical Plant Simulation : http://192.168.95.10
-PLC : http://192.168.95.2:8080
-HMI : http://192.168.5:8080/ScadaBR
-Firewall : http://192.168.90.100
-Workstation : 192.168.95.200
+* Chemical Plant Simulation : http://192.168.95.10
+* PLC : http://192.168.95.2:8080
+* HMI : http://192.168.5:8080/ScadaBR
+* Firewall : http://192.168.90.100
+* Workstation : 192.168.95.200
 
 === Credentials
 
@@ -173,3 +173,25 @@ Below is a snippet of the detection logic in Wazuh for PLC file integrity, a cus
   </rule>  
 </group>
 ----
+
+== Credits
+
+The GRFICSv2 simulation is by Fortiphyd - https://github.com/Fortiphyd/GRFICSv2 
+
+== Further reading
+
+https://www.usenix.org/system/files/conference/ase18/ase18-paper_formby.pdf
+
+The above whitepaper lists out all the possible attacks on the GRFICSv2 testbed.
+
+== Open source security tooling used
+
+* Suricata - https://suricata.io/
+* Zeek (Bro) - https://zeek.org/
+* Wazuh - https://wazuh.com/
+* OpenvSwitch - https://www.openvswitch.org/
+* PfSense - https://www.pfsense.org/
+* OpenPLC Editor - https://autonomylogic.com/download/
+* OpenPLC Runtime - https://autonomylogic.com/ 
+* ScadaBR - https://sourceforge.net/projects/scadabr/
+* Caldera - OT : https://github.com/mitre/caldera-ot

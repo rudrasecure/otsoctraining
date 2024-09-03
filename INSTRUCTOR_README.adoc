@@ -57,3 +57,9 @@ Restart the systemd process for the chemical plant
 `sudo systemctl restart plc-pressure-probe.service`
 
 Log file is picked up from /var/log/output.log - Look here in case anything goes wrong with this detection
+
+
+== Disable the pfsense firewall in case you're locked out
+
+Press 8 (or the relevant number to drop into a shell). `pfctl -d`
+This disables the firewall. To enable it, login to the web interface and apply a firewall rule or type 'pfctl -e'.
