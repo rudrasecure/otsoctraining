@@ -1,8 +1,38 @@
 :siemip: 192.168.90.20
 :attackerip: 192.168.0.249
-= OT ISAC Training
+
+= OT Detection Engineering training
 
 This repository contains the links, and code necessary for the OT SOC Detection Engineering Workshop.
+
+== Installation and Setup
+
+=== Dependencies
+
+This installation has been tested on VirtualBox 7.0 on Debian based systems. (Ubuntu 24 and Parrot have been tested and it works)
+
+* Linux
+* OpenVSwitch
+* VirtualBox
+
+=== Instructions
+
+==== Install
+
+Grab the OVA folder and all the OVA files for the VM's required for this lab from https://drive.google.com/drive/folders/17EAxxYFAVeSE4wMMMwmLJultcku7yWc2?usp=sharing
+Download all these files and put them in a folder called 'OVA'. You will need the fully qualified path to this folder. Please put this fully qualified path into the `./setup_script.sh` script under the `OVA_FOLDER` variable.
+
+Run  `./setup_script.sh import` as your user (not root)
+
+This should import the machines
+
+==== Startup
+
+`sudo ./setup_script.sh startup` should bring up the lab. You need sudo to execute the OpenVSwitch commands
+
+==== Shutdown
+
+`./setup_script.sh shutdown` should gracefully poweroff all the machines
 
 == Environment
 
