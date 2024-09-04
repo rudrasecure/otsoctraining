@@ -36,6 +36,9 @@ This should import the machines
 
 == Environment
 
+.Lab Architecture
+image::images/lab_architecture.png[]
+
 * Chemical Plant Simulation : http://192.168.95.10
 * PLC : http://192.168.95.2:8080
 * HMI : http://192.168.5:8080/ScadaBR
@@ -153,55 +156,7 @@ Below is a snippet of the detection logic in Wazuh for PLC file integrity, a cus
 
 [,xml]
 ----
-<!-- Local rules -->
-
-<!-- Modify it at your will (and your own risk). -->
-<!-- Copyleft RUDRA Cybersecurity -->
-<!-- Example -->
-<group name="local,">
-
-  <!--
-  Dec 10 01:02:02 host sshd[1234]: Failed none for root from 1.1.1.1 port 1066 ssh2
-  -->
-  <rule id="100001" level="5">
-    <if_sid>5716</if_sid>
-    <srcip>1.1.1.1</srcip>
-    <description>sshd: authentication failed from IP 1.1.1.1.</description>
-    <group>authentication_failed,pci_dss_10.2.4,pci_dss_10.2.5,</group>
-  </rule>
-
-  <rule id="100002" level="0">
-    <location>/var/log/output.log</location>
-    <field name="value">\.+</field>
-    <description>PLC values grouped $(value)</description>
-    <group>plc,</group>
-  </rule>
-  <rule id="100003" level="13">
-    <if_sid>100002</if_sid>
-    <field name="value" type="pcre2">^(55[3-9]\d{2}|5[6-9]\d{3}|[6-9]\d{4}|\d{6,})</field>
-    <description>Urgent:: PLC pressure setpoint $(value)</description>
-    <group>plc,</group>
-  </rule>
-  <rule id="100005" level="10">
-    <if_group>syscheck</if_group>
-    <field name="file">/home/user/OpenPLC_v2/st_files</field>
-    <description>PLC programme integrity alert</description>
-    <group>plc,syscheck,</group>
-  </rule>  
-  <rule id="100010" level="13">
-    <if_sid>86601</if_sid>
-    <field name="src_ip">192.168.95.2</field>
-    <field name="dest_ip" negate="yes">192.168.90.5|192.168.90.200</field>
-    <description>Urgent:: Suricata PLC communicating with unknown IP $(dest_ip)</description>
-    <group>plc,suricata,</group>
-  </rule>
-  <rule id="100023" level="0">
-    <if_sid>510</if_sid>
-    <field name="file">bin/diff$</field>
-    <description>False-positive match for rootcheck regex</description>
-    <group>syscheck,rootcheck,</group>
-  </rule>  
-</group>
+include::working_files/local_rules.xml[]
 ----
 
 == Credits
